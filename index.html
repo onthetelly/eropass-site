@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head >
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EroPass — Privacy-First Age Verification</title>
@@ -135,6 +135,11 @@
     margin:28px 0 10px;
     color:var(--text);
   }
+  h4{
+    font-size:14px;
+    margin:20px 0 8px;
+    color:var(--text);
+  }
   p{color:var(--text-dim);margin:0 0 14px;}
   ul.plain{margin:0 0 14px;padding-left:20px;color:var(--text-dim);}
   ul.plain li{margin-bottom:8px;}
@@ -193,6 +198,9 @@
     margin:0 0 20px;
   }
   .meta{font-size:13px;color:var(--text-faint);margin-bottom:24px;}
+  table.keep{width:100%;border-collapse:collapse;font-size:14px;margin:0 0 14px;}
+  table.keep th,table.keep td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);color:var(--text-dim);vertical-align:top;}
+  table.keep th{color:var(--text-faint);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:0.03em;}
   footer{
     padding:40px 24px 60px;
     text-align:center;
@@ -230,7 +238,7 @@
     <span class="status-pill">In development</span>
     <h1>Prove you're old enough — without proving who you are.</h1>
     <p class="lede">EroPass is a device-bound, privacy-first age verification system. It's built to satisfy age-gating requirements for online content without forcing people to repeatedly upload ID, or forcing platforms to become custodians of sensitive identity data.</p>
-    <p class="lede">The core product is <strong>EroPassID</strong>, an iOS app that verifies a person's age once, then issues a reusable, cryptographically signed proof of age that can be presented to participating apps and websites on demand.</p>
+    <p class="lede">The core product is <strong>EroPassID</strong>, an iOS app that checks a person's age once, then holds a reusable, cryptographically signed proof of age on their phone that can be presented to participating websites on demand.</p>
   </section>
 
   <section id="aim">
@@ -238,46 +246,47 @@
     <p>Age-verification laws for online content are expanding quickly, and most implementations force an uncomfortable choice: sites either do nothing, or they collect and store government ID scans, selfies, and birthdates directly — creating large, centralized troves of sensitive identity data that become high-value targets for breaches, leaks, and misuse.</p>
     <p>EroPass exists to remove that trade-off. Verification should happen once, be portable, and reveal nothing more than the minimum fact required: <em>is this person old enough, yes or no</em>.</p>
     <h2 style="margin-top:40px;"><span class="num">02</span> What EroPass does</h2>
-    <p>EroPass separates <strong>identity verification</strong> from <strong>proof of age</strong>. A person verifies their age once, through a vetted third-party verification step. EroPass then issues a short-lived, cryptographically signed credential bound to that person's device. Sites and apps that need to gate age-restricted content can request proof of that credential — and get a signed yes/no answer — without ever learning the person's name, birthdate, or seeing their identity documents.</p>
+    <p>EroPass separates <strong>the age check</strong> from <strong>proof of age</strong>. A person confirms their age once, using a government-issued ID already stored in Apple Wallet on their iPhone. EroPass then issues a time-limited, cryptographically signed credential bound to that person's device. Sites that need to gate age-restricted content can ask for proof of that credential — and get a signed yes/no answer — without ever learning the person's name, birthdate, or seeing their identity documents.</p>
     <p>This is designed for use by adult content platforms, age-gated marketplaces, and any online service with a legal or policy obligation to verify age before granting access.</p>
   </section>
 
   <section id="how-it-works">
     <h2><span class="num">03</span> How it works</h2>
+    <div class="note">This describes the current development build. Apple has granted EroPass access to the age check in step 1 for development only; approval for public release has not yet been granted.</div>
     <div class="steps">
       <div class="step">
         <div class="step-num">1</div>
         <div class="step-body">
-          <strong>One-time age verification</strong>
-          <p>The user completes an identity/age check through a vetted third-party verification provider. EroPass does not perform this check itself and is designed so that it never receives or stores the underlying ID images, document numbers, or full birthdate — only a pass/fail result.</p>
+          <strong>One-time age check</strong>
+          <p>The EroPassID app asks the ID in your Apple Wallet for one fact: that you are 18 or over. Your iPhone shows you what is being requested, and nothing is sent until you approve it. EroPass does not ask for your name, date of birth, photo, address or document number, and never receives an image of your ID.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">2</div>
         <div class="step-body">
           <strong>Device-bound credential</strong>
-          <p>On success, the EroPassID app generates a private key inside the device's Secure Enclave and receives a short-lived, cryptographically signed age credential (an ECDSA-signed, JWT-based token) tied to that specific device. The private key never leaves the device.</p>
+          <p>On success, the app creates a private key inside your iPhone's Secure Enclave and receives a signed age credential tied to that key. The credential says only that you are 18 or over, the day it was issued, and when it expires. The private key never leaves the device.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">3</div>
         <div class="step-body">
           <strong>Presenting proof of age</strong>
-          <p>When a participating site or app needs to confirm age, EroPassID presents its signed credential — via an in-app handshake or a QR-based cross-device linking flow — proving the device holds a valid, unexpired age attestation. The relying site learns only "yes, verified" or "no," never the person's identity.</p>
+          <p>When a participating page needs to confirm age, it shows a QR code. You scan it with EroPassID and approve with Face ID; your phone signs a one-time challenge with its key. The page learns only "verified" or "not verified."</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">4</div>
         <div class="step-body">
           <strong>Expiry &amp; renewal</strong>
-          <p>Credentials are time-bound and expire on a schedule, so a revoked or stale verification can't be used indefinitely. Renewal requires re-establishing the credential rather than a one-time, permanent bypass.</p>
+          <p>Credentials expire (currently after 30 days). Renewing means repeating the age check, so a stale credential can't be used indefinitely.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">5</div>
         <div class="step-body">
-          <strong>No visibility into usage</strong>
-          <p>EroPass issues and validates age credentials; it does not see which sites, apps, or content a credential is used with.</p>
+          <strong>No record of use</strong>
+          <p>EroPass's server checks each scan, so it handles your credential and your device's public key for the moment of that check. It stores neither, and keeps no record that links one scan to another, to a device, or to a person.</p>
         </div>
       </div>
     </div>
@@ -285,22 +294,29 @@
 
   <section id="privacy-policy">
     <h2><span class="num">04</span> Privacy Policy</h2>
-    <p class="meta">Effective date: September 7, 2026 &nbsp;·&nbsp; Applies to: EroPass, the EroPassID application, and eropass.com</p>
+    <p class="meta">Effective date: November 18, 2026 &nbsp;·&nbsp; Applies to: EroPass, the EroPassID application, and eropass.com</p>
 
-    <div class="note">EroPass is currently in development. This policy describes the data-handling architecture we are building EroPass around, and it will be kept current as the product evolves and as our third-party verification partner is finalized.</div>
+    <div class="note"><strong>EroPass is not yet available to the public.</strong> The EroPassID app has not been released, and the EroPass service is reachable only by our own test devices. This policy describes how the current development build handles data. Where something is not yet decided or not yet built, it says so. It will be updated before public release.</div>
 
     <h3>Who we are</h3>
-    <p>EroPass is developed by <strong>Paradigm Net Media</strong> ("EroPass," "we," "us," or "our"). This policy explains what information EroPass collects, why, and the choices you have.</p>
+    <p>EroPass is developed by <strong>Paradigm Net Media</strong> ("EroPass," "we," "us," or "our"). This policy explains what information EroPass handles, why, and the choices you have.</p>
 
     <h3>Our privacy commitment</h3>
-    <p>EroPass is built on a data-minimization principle: we aim to collect and retain the least amount of information necessary to issue and validate a proof-of-age credential, and no more. Where possible, sensitive verification data is handled by specialized third parties and never touches EroPass's own servers at all.</p>
+    <p>EroPass is built on a data-minimization principle: we collect and retain the least information necessary to issue and check a proof-of-age credential, and no more. Your identity documents stay in your wallet and never reach EroPass's servers.</p>
 
-    <h3>Information we collect</h3>
+    <h3>This website</h3>
+    <p>eropass.com is a single static page. It sets no cookies and uses no analytics, trackers, advertising or forms. The page is hosted on GitHub Pages, so GitHub receives your IP address in order to deliver it, under <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub's privacy statement</a>. We do not receive those logs.</p>
+
+    <h3>Information the EroPass service handles</h3>
     <ul class="plain">
-      <li><strong>Age/identity verification data:</strong> the initial check is performed by a vetted third-party identity verification provider under its own privacy terms. EroPass is designed to receive only the outcome of that check (verified / not verified, and an expiry), not the underlying documents, images, or full date of birth.</li>
-      <li><strong>Device-bound cryptographic keys:</strong> EroPassID generates a private signing key inside your device's Secure Enclave. This key is never transmitted to EroPass or to any third party.</li>
-      <li><strong>Ephemeral session and linking tokens:</strong> short-lived tokens (JWT-based) used to complete the verification handshake and cross-device QR linking flow. These are used only to complete the transaction and are not retained beyond what's needed for that purpose.</li>
-      <li><strong>Basic technical/security logs:</strong> like most online services, our infrastructure keeps minimal, short-retention logs (such as IP address and timestamp) for security, abuse prevention, and reliability purposes.</li>
+      <li><strong>Your age check:</strong> your iPhone sends us an encrypted response from the ID in your Apple Wallet. It contains the single answer we asked for (18 or over) together with the cryptographic material needed to confirm it came from a genuine ID, such as the issuing authority's signature and certificate. We check it in memory and discard it. Nothing from it is stored or logged.</li>
+      <li><strong>Device-bound key:</strong> EroPassID creates a private signing key inside your device's Secure Enclave. The private key is never sent to EroPass or anyone else. Its public half is sent to us when your credential is issued and each time you scan, is used for that check, and is not stored.</li>
+      <li><strong>Age credential:</strong> issued to your phone and kept only there. We hold no copy and no list of credentials.</li>
+      <li><strong>Browser cookie:</strong> when you open an age-gated page that uses EroPass, we set one strictly necessary cookie containing a random value, so the page can show its own result. It is not used for tracking or analytics and expires after 30 minutes.</li>
+      <li><strong>Session data:</strong> a random session id (shown in the QR code), one-time numbers that prevent replay, and a "verified" flag for that session. None of these is linked to you or your device. Lifetimes are listed under "Data retention."</li>
+      <li><strong>Event logs:</strong> for each event our application logs the time, the type of event, an outcome category and a random id for that request. These lines contain no IP address, browser details, session id or device identifier.</li>
+      <li><strong>Web server request log:</strong> separately, our web server currently writes a standard line for each request, containing the time, the path requested and the network address the request arrived from. We intend to turn this log off before public release.</li>
+      <li><strong>Network delivery:</strong> requests reach us through Cloudflare, which necessarily processes IP addresses to deliver traffic and block abuse, under its own privacy policy.</li>
     </ul>
 
     <div class="grid-2" style="margin:20px 0;">
@@ -310,44 +326,71 @@
           <li>Your name</li>
           <li>Government ID photos or numbers</li>
           <li>Home address</li>
-          <li>Full birthdate (beyond what a provider needs momentarily to verify age)</li>
-          <li>Which sites or apps you use your credential with</li>
-          <li>Biometric data — Face ID/Touch ID never leaves your device</li>
+          <li>Date of birth</li>
+          <li>A device fingerprint or advertising identifier</li>
+          <li>A stored record of where or when you use your credential</li>
+          <li>Biometric data — Face ID never leaves your device</li>
         </ul>
       </div>
       <div class="card yes">
-        <h3>We do collect (minimally)</h3>
+        <h3>We do handle (minimally)</h3>
         <ul>
-          <li>Verification result (pass/fail + expiry)</li>
-          <li>Short-lived session/linking tokens</li>
-          <li>Basic security logs (IP, timestamp)</li>
+          <li>The "18 or over" answer, checked and discarded</li>
+          <li>One short-lived cookie and random session data</li>
+          <li>Event logs with no identifiers</li>
+          <li>For now, a web server request log that includes a network address</li>
         </ul>
       </div>
     </div>
 
-    <h3>Third-party verification providers</h3>
-    <p>EroPass relies on a third-party provider to perform the underlying identity/age check. We have not yet finalized which provider we will launch with; once selected, we will name that provider here and link to its own privacy policy. We select and contract with verification providers on the basis of strong data-minimization and security commitments.</p>
+    <h3>The age check and Apple</h3>
+    <p>The age check uses Apple's Verify with Wallet. The request and your approval happen on your iPhone, in Apple's own interface, and the app declares to the system that EroPass will not store what it receives. Apple's handling of your ID in Wallet is covered by <a href="https://www.apple.com/legal/privacy/">Apple's privacy policy</a>.</p>
+    <p>Apple has granted EroPass access to this feature for development only. Approval for public release has not yet been granted. EroPass has no other verification method. EroPass is not affiliated with or endorsed by Apple.</p>
 
     <h3>How we use information</h3>
-    <p>Information collected is used solely to: issue, validate, and expire age-verification credentials; maintain the security and integrity of the verification system; prevent fraud and abuse; and comply with applicable law.</p>
+    <p>Information is used solely to: issue, check, and expire age credentials; maintain the security and integrity of the system; prevent fraud and abuse; and comply with applicable law.</p>
 
     <h3>Data retention</h3>
-    <p>Ephemeral session and linking tokens are deleted once the verification handshake completes. Your private signing key remains on your device only and is removed if you delete the EroPassID app or revoke your credential in-app. Security logs are kept only as long as needed for security purposes, then deleted.</p>
+    <h4>On our servers</h4>
+    <p>Everything in this table is held in memory and expires automatically.</p>
+    <table class="keep">
+      <tr><th>What</th><th>What it holds</th><th>Kept for</th></tr>
+      <tr><td>Browser session</td><td>A one-way hash of your cookie's random value, linked to the session id</td><td>30 minutes</td></tr>
+      <tr><td>Session id</td><td>The random id shown in the QR code</td><td>15 minutes</td></tr>
+      <tr><td>"Issued" marker</td><td>That the session id once existed, so an expired code can be told apart from an invalid one</td><td>24 hours</td></tr>
+      <tr><td>Scan one-time number</td><td>A random number that stops a scan being replayed</td><td>Up to 60 seconds; deleted when used</td></tr>
+      <tr><td>Scan result</td><td>"Verified," against the session id</td><td>15 minutes</td></tr>
+      <tr><td>Age-check one-time number and ticket</td><td>A random number, and a one-way hash of a single-use ticket</td><td>Up to 5 minutes each; deleted when used</td></tr>
+      <tr><td>Request counter</td><td>A total count of age-check requests per minute, with nothing per person</td><td>2 minutes</td></tr>
+    </table>
+    <ul class="plain">
+      <li><strong>Your age check response</strong> is checked in memory and never stored or logged.</li>
+      <li><strong>Your age credential</strong> is not kept by us. We hold no copy, no list of credentials and no record of the device it went to.</li>
+      <li><strong>Logs</strong> (the event log and the web server request log) are kept on our own server. No fixed retention period has been set for them during development. One will be stated here before public release.</li>
+    </ul>
+    <h4>On your device</h4>
+    <ul class="plain">
+      <li><strong>A signing key</strong> held in the Secure Enclave. It can be used only after Face ID, and it stops working if the Face ID enrollment on the phone changes.</li>
+      <li><strong>Your age credential</strong>, which states only that you are 18 or over, the day it was issued, when it expires, and your device's public key. It is valid for a limited period (currently 30 days).</li>
+      <li><strong>A Face ID change marker:</strong> a value iOS provides that changes when Face ID enrollment changes, so the app can ask for a new age check. It is not biometric data and cannot be used to recognize anyone.</li>
+    </ul>
+    <p>All three are stored for this device only. They are not synced to iCloud and cannot be restored onto a different phone.</p>
+    <p>There is not yet an in-app control to delete them; one is planned before public release. Deleting the app alone may not remove them, because iOS can keep an app's secure storage after the app is removed. Erasing the iPhone removes them.</p>
 
     <h3>Data sharing</h3>
-    <p>We do not sell personal data. We do not share verification results with relying sites or apps beyond the minimum cryptographic yes/no attestation required to complete age verification. We may disclose limited information if required to comply with applicable law, regulation, or legal process.</p>
+    <p>We do not sell personal data. A page that uses EroPass receives only "verified" or "not verified." We may disclose limited information if required to comply with applicable law, regulation, or legal process; because of how EroPass is built, we hold very little that could be disclosed.</p>
 
     <h3>Children's privacy</h3>
-    <p>EroPass is not directed at children, and its entire purpose is to help prevent access to age-restricted content by people who are underage. We do not knowingly collect personal information from children. If a verification attempt indicates the person does not meet the required age, no identity data from that attempt is retained beyond what's needed to return the result.</p>
+    <p>EroPass is not directed at children, and its entire purpose is to help prevent access to age-restricted content by people who are underage. We do not knowingly collect personal information from children. If an age check does not confirm that the person is 18 or over, no credential is issued and nothing from that attempt is retained.</p>
 
     <h3>Your rights</h3>
-    <p>Depending on where you live, you may have rights to access, correct, or request deletion of personal information we hold about you. Because EroPass is designed to retain very little information by default, most requests can be resolved quickly. To exercise these rights, contact us using the details below.</p>
+    <p>Depending on where you live, you may have rights to access, correct, or request deletion of personal information we hold about you. Because EroPass keeps no account, no identity data and no lasting record of your age check, there is usually nothing on our servers that can be tied to you. To ask a question or exercise these rights, contact us using the details below.</p>
 
     <h3>Security</h3>
-    <p>EroPass uses device-level hardware security (Secure Enclave-backed key storage), cryptographic signing (ECDSA) for credentials, and encryption in transit (TLS) for any network communication. We do not store verification documents in plaintext, and our architecture is designed to avoid storing them at all.</p>
+    <p>EroPass uses device-level hardware security (a key held in the Secure Enclave that requires Face ID for each use), cryptographic signing (ECDSA) for credentials, and encryption in transit (TLS) for all network communication. We never receive ID documents or images, so there are none to store.</p>
 
     <h3>Changes to this policy</h3>
-    <p>We may update this policy as EroPass develops, particularly as we finalize our verification provider and launch publicly. Material changes will be reflected on this page with an updated effective date.</p>
+    <p>We will update this policy as EroPass develops, and in particular before public release. Material changes will be reflected on this page with an updated effective date.</p>
 
     <h3>Contact us</h3>
     <p>Questions about this policy or your data can be sent to <a href="mailto:telly@paradigmnetmedia.com">telly@paradigmnetmedia.com</a>.</p>
