@@ -294,7 +294,7 @@
 
   <section id="privacy-policy">
     <h2><span class="num">04</span> Privacy Policy</h2>
-    <p class="meta">Effective date: November 23, 2026 &nbsp;·&nbsp; Applies to: EroPass, the EroPassID application, and eropass.com</p>
+    <p class="meta">Effective date: November 24, 2026 &nbsp;·&nbsp; Applies to: EroPass, the EroPassID application, and eropass.com</p>
 
     <div class="note"><strong>EroPass is not yet available to the public.</strong> The EroPassID app has not been released, and the EroPass service is reachable only by our own test devices. This policy describes how the current development build handles data. Where something is not yet decided or not yet built, it says so. It will be updated before public release.</div>
 
@@ -314,8 +314,8 @@
       <li><strong>Age credential:</strong> issued to your phone and kept only there. We hold no copy and no list of credentials.</li>
       <li><strong>Browser cookie:</strong> when you open an age-gated page that uses EroPass, we set one strictly necessary cookie containing a random value, so the page can show its own result. It is not used for tracking or analytics and expires after 30 minutes.</li>
       <li><strong>Session data:</strong> a random session id (shown in the QR code), one-time numbers that prevent replay, and a "verified" flag for that session. None of these is linked to you or your device. Lifetimes are listed under "Data retention."</li>
-      <li><strong>Event logs:</strong> for each event our application logs the time, the type of event, an outcome category, the path requested and a random id for that request. These lines contain no IP address, browser details, session id or device identifier.</li>
-      <li><strong>Web server request log:</strong> separately, our web server currently writes a standard line for each request, containing the time, the path requested and the network address the request arrived from. We intend to turn this log off before public release.</li>
+      <li><strong>Event logs:</strong> for each event our application logs the time, the type of event, an outcome category and the path requested. A line has no id for the individual request and contains no IP address, browser details, session id or device identifier.</li>
+      <li><strong>No web server request log:</strong> our web server does not log individual requests.</li>
       <li><strong>Network delivery:</strong> requests reach us through Cloudflare, which delivers our traffic and blocks abuse. Cloudflare decrypts each request before passing it to us, so as well as your IP address it is able to read what your phone and browser send us and what we send back, including your age credential and device public key when you scan, the session id and the browser cookie. The one exception is the age check response from the ID in your Apple Wallet, which is separately encrypted to a key that only we hold, so Cloudflare cannot read it. Cloudflare handles this data under its own privacy policy.</li>
     </ul>
 
@@ -338,7 +338,6 @@
           <li>The "18 or over" answer, checked and discarded</li>
           <li>One short-lived cookie and random session data</li>
           <li>Event logs with no IP address, session id or device identifier</li>
-          <li>For now, a web server request log that includes a network address</li>
         </ul>
       </div>
     </div>
@@ -352,12 +351,11 @@
 
     <h3>Data retention</h3>
     <h4>On our servers</h4>
-    <p>Everything in this table is deleted automatically after the time shown. At present the data store that holds it also saves periodic snapshots of its contents to disk on our own server, so a copy of an entry can remain in the most recent snapshot after the entry itself has expired, until a later snapshot replaces it. We are turning these snapshots off.</p>
+    <p>Everything in this table is held in memory and expires automatically.</p>
     <table class="keep">
       <tr><th>What</th><th>What it holds</th><th>Kept for</th></tr>
       <tr><td>Browser session</td><td>A one-way hash of your cookie's random value, linked to the session id</td><td>30 minutes</td></tr>
       <tr><td>Session id</td><td>The random id shown in the QR code</td><td>15 minutes</td></tr>
-      <tr><td>"Issued" marker</td><td>That the session id once existed, so an expired code can be told apart from an invalid one</td><td>24 hours</td></tr>
       <tr><td>Scan one-time number</td><td>A random number that stops a scan being replayed</td><td>Up to 60 seconds; deleted when used</td></tr>
       <tr><td>Scan result</td><td>"Verified," against the session id</td><td>15 minutes</td></tr>
       <tr><td>Age-check one-time number and ticket</td><td>A random number, and a one-way hash of a single-use ticket</td><td>Up to 5 minutes each; deleted when used</td></tr>
@@ -366,7 +364,7 @@
     <ul class="plain">
       <li><strong>Your age check response</strong> is checked in memory and never stored or logged. Only its outcome is recorded, as an event log line.</li>
       <li><strong>Your age credential</strong> is not kept by us. We hold no copy, no list of credentials and no record of the device it went to.</li>
-      <li><strong>Logs</strong> (the event log and the web server request log) are kept on our own server. No fixed retention period has been set for them during development. One will be stated here before public release.</li>
+      <li><strong>The event log</strong> is kept on our own server. No fixed retention period has been set for it during development. One will be stated here before public release.</li>
     </ul>
     <h4>On your device</h4>
     <ul class="plain">
@@ -381,7 +379,7 @@
     <p>We do not sell personal data. A page that uses EroPass receives only "verified" or "not verified." We may disclose limited information if required to comply with applicable law, regulation, or legal process; because of how EroPass is built, we hold very little that could be disclosed.</p>
 
     <h3>Children's privacy</h3>
-    <p>EroPass is not directed at children, and its entire purpose is to help prevent access to age-restricted content by people who are underage. We do not knowingly collect personal information from children. If an age check does not confirm that the person is 18 or over, no credential is issued and the response is discarded. What we keep from that attempt is one event log line: the time, that an age check was refused, and a general reason category (for example, that the answer was not "18 or over"). That line contains no IP address, session id or device identifier. As with every request at present, the web server request log described above also records the request.</p>
+    <p>EroPass is not directed at children, and its entire purpose is to help prevent access to age-restricted content by people who are underage. We do not knowingly collect personal information from children. If an age check does not confirm that the person is 18 or over, no credential is issued and the response is discarded. What we keep from that attempt is one event log line: the time, that an age check was refused, and a general reason category (for example, that the answer was not "18 or over"). That line contains no IP address, session id or device identifier.</p>
 
     <h3>Your rights</h3>
     <p>Depending on where you live, you may have rights to access, correct, or request deletion of personal information we hold about you. Because EroPass keeps no account, no identity data and no lasting record of your age check, there is usually nothing on our servers that can be tied to you. To ask a question or exercise these rights, contact us using the details below.</p>
